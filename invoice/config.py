@@ -51,16 +51,23 @@ class Config:
         """
         return self._walk_into_data(self._data, key) or default_value
 
-    def _walk_into_data(self, data: Any, key: str) -> Any:
+    def _walk_into_data(self, data: Any, key: str, walk_depth: int = 0) -> Any:
         """Walk into the nested data
 
         Arguments:
             data (Any) -- The data source
             key (str) -- The nested key separated by dots
 
+        Keyword Arguments:
+            walk_depth (int) -- The current walking depth (default 0)
+
         Returns:
             Any
         """
+        if walk_depth >= 10:
+            raise Exception('The maximum walking depth is exceeded')
+
+        walk_depth += 1
         splitted_key = key.split('.')
         target_key = splitted_key.pop(0)
         key_path = '.'.join(splitted_key)
@@ -69,6 +76,6 @@ class Config:
 
         if splitted_key:
 
-            return self._walk_into_data(target_data, key_path)
+            return self._walk_into_data(target_data, key_path, walk_depth)
 
         return target_data
