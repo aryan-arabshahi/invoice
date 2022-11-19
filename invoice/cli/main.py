@@ -1,7 +1,9 @@
+from invoice.app import InvoiceApp
 
 
 def main():
-    pass
+    app = InvoiceApp()
+    app.run()
 
 
 if __name__ == '__main__':
