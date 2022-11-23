@@ -1,9 +1,10 @@
 {
     "debug": true,
     "mongodb": {
+        "db": "invoice",
         "host": "127.0.0.1",
         "port": 27017,
         "username": "root",
-        "toor": "toor"
+        "password": "toor"
     }
 }

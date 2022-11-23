@@ -1,9 +1,11 @@
 from flask import Flask
 from flask_cors import CORS
-from invoice.config import Config
+from invoice.services.contact import ContactService
 
-
-config = Config()
 
 flask_app = Flask(__name__)
 CORS(flask_app)
+
+
+# Services
+contact_service = ContactService()

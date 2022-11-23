@@ -15,16 +15,16 @@ class ContactController(BaseController):
         request_data = request.get_json(force=True)
         self.logger.debug(f'Creating the new contact - {request_data}')
         try:
-            # created_user = user_service.create(
-            #     email=inputs.email,
-            #     first_name=inputs.first_name,
-            #     last_name=inputs.last_name,
-            #     image=inputs.image,
-            #     wage=inputs.wage
-            # )
+            created_user = contact_service.create(
+                email=inputs.email,
+                first_name=inputs.first_name,
+                last_name=inputs.last_name,
+                image=inputs.image,
+                wage=inputs.wage
+            )
 
             return response.success()
 
         except Exception as e:
-            self.log_errors(f'Could not create the new contact - email: {request_data.get("email")} - {e}')
+            self.log_errors(f'Could not create the new contact - email: {request_data} - {e}')
             return response.failed(http_status=500, message='internal_server_error')

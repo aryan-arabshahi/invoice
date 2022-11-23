@@ -1,35 +1,38 @@
+from typing import Any
 from pymongo import MongoClient
+from invoice import config
 from invoice.logger import Logger
 from logging import getLogger
 from bson import ObjectId
+from invoice.utils import env
 
 
-class MongoConnection:
+class MongoClientSingleton:
 
     _instance = None
 
-    def __init__(self, db_config: dict):
-        if MongoConnection._instance != None:
+    def __init__(self):
+        if MongoClientSingleton._instance is not None:
             raise Exception('This class is a singleton!')
 
         else:
-            MongoConnection._instance = self.create_connection(db_config)
+            MongoClientSingleton._instance = self.create_connection()
 
     @staticmethod 
-    def get_instance(db_config: dict):
+    def get_instance():
 
-        if MongoConnection._instance == None:
-            MongoConnection(db_config)
+        if MongoClientSingleton._instance is None:
+            MongoClientSingleton()
 
-        return MongoConnection._instance
+        return MongoClientSingleton._instance
 
     @staticmethod 
-    def create_connection(db_config: dict):
+    def create_connection():
         return MongoClient(
-            db_config.get('host', '127.0.0.1'),
-            username=db_config.get('username'),
-            password=db_config.get('password')
-        )[db_config.get('db', 'invoice')]
+            env('MONGODB_HOST') or config.get('mongodb.host'),
+            username=env('MONGODB_USERNAME') or config.get('mongodb.username'),
+            password=env('MONGODB_PASSWORD') or config.get('mongodb.password')
+        )
 
 
 class BaseRepository:
@@ -40,6 +43,25 @@ class BaseRepository:
             getLogger(__name__),
             dict(prefix=getattr(self, 'LOG_PREFIX', getattr(self, 'LOG_PREFIX', self.__class__.__name__)))
         )
+
+        self._client = self.get_client()
+        self.collection = self.get_collection(getattr(self, 'COLLECTION')) if hasattr(self, 'COLLECTION') else None
+
+    @staticmethod
+    def get_client() -> MongoClient:
+        db_name = env('MONGODB_DATABASE') or config.get('mongodb.db')
+        return MongoClientSingleton.get_instance()[db_name]
+
+    def get_collection(self, collection_name: str) -> Any:
+        """Get the collection
+
+        Arguments:
+            collection_name (str) -- The collection name
+        
+        Returns:
+            Any
+        """
+        return self._client[collection_name]
 
     @staticmethod
     def normalize_primary_key(data: dict) -> dict:
@@ -62,4 +84,12 @@ class BaseRepository:
 
     @staticmethod
     def str_to_object_id(identifier: str) -> ObjectId:
+        """Convert the string to the object ID
+
+        Arguments:
+            identifier (str) -- The stringified ID.
+        
+        Returns:
+            ObjectId
+        """
         return ObjectId(identifier)
