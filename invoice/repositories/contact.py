@@ -21,7 +21,7 @@ class ContactRepositoryInterface(ABC):
 
     @abstractmethod
     def find_by_unique_id(self, unique_id: str) -> Contact:
-        """Find the specified contact.
+        """Find the specified contact by unique ID.
 
         Arguments:
             unique_id (str) -- The contact unique ID.
@@ -31,6 +31,33 @@ class ContactRepositoryInterface(ABC):
 
         Raises:
             ContactNotFound
+        """
+        pass
+
+    @abstractmethod
+    def find(self, contact_id: str) -> Contact:
+        """Find the specified contact by ID.
+
+        Arguments:
+            contact_id (str) -- The contact ID.
+
+        Returns:
+            Contact
+
+        Raises:
+            ContactNotFound
+        """
+        pass
+
+    @abstractmethod
+    def update(self, contact: Contact) -> Contact:
+        """Update the specified contact
+
+        Arguments:
+            contact (Contact) -- The contact.
+
+        Returns:
+            Contact
         """
         pass
 
@@ -58,7 +85,7 @@ class ContactRepository(BaseRepository, ContactRepositoryInterface):
         return contact
 
     def find_by_unique_id(self, unique_id: str) -> Contact:
-        """Find the specified contact.
+        """Find the specified contact by unique ID.
 
         Arguments:
             unique_id (str) -- The contact unique ID.
@@ -77,3 +104,48 @@ class ContactRepository(BaseRepository, ContactRepositoryInterface):
             raise ContactNotFound
 
         return Contact(**result)
+
+    def find(self, contact_id: str) -> Contact:
+        """Find the specified contact by ID.
+
+        Arguments:
+            contact_id (str) -- The contact ID.
+
+        Returns:
+            Contact
+
+        Raises:
+            ContactNotFound
+        """
+        self.logger.debug(f'Finding the contact by ID - id: {contact_id}')
+
+        result = self.get_collection().find_one({'_id': self.str_to_object_id(contact_id)})
+
+        if not result:
+            raise ContactNotFound
+
+        return Contact(**result)
+
+    def update(self, contact: Contact) -> Contact:
+        """Update the specified contact
+
+        Arguments:
+            contact (Contact) -- The contact.
+
+        Returns:
+            Contact
+        """
+        self.logger.debug(f'Updating the contact - contact: {contact}')
+
+        contact.updatedAt = str(utcnow())
+
+        self.get_collection().update_one(
+            {
+                '_id': self.str_to_object_id(contact.id),
+            },
+            {
+                '$set': contact.get_changes(),
+            }
+        )
+
+        return contact
