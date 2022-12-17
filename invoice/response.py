@@ -9,9 +9,18 @@ class ResponseStatus(Enum):
     FAILED = 'failed'
 
 
+class HttpStatusCode(Enum):
+    SUCCESS = 200
+    CREATED = 201
+    NOT_FOUND = 404
+    CONFLICT = 409
+    INTERNAL_SERVER_ERROR = 500
+
+
 class HttpResponse:
 
-    def success(self, data: Union[dict, list, str] = None, message: str = None, http_status: int = 200) -> Response:
+    def success(self, data: Union[dict, list, str] = None, message: str = None, http_status: Union[int, Enum] = 200)\
+            -> Response:
         """Create a success response
 
         Keyword Arguments:
@@ -26,13 +35,13 @@ class HttpResponse:
             'status': ResponseStatus.SUCCESS.value,
             'message': message or 'request_succeeded',
             'data': data if data is not None else {},
-        }, http_status)
+        }, http_status.value if isinstance(http_status, Enum) else http_status)
 
-    def failed(self, http_status: int, message: str = None, data: dict = None) -> Response:
+    def fail(self, http_status: Union[int, Enum], message: str = None, data: dict = None) -> Response:
         """Create a failed response
 
         Arguments:
-            http_status {int}
+            http_status {Union[int, Enum]}
 
         Keyword Arguments:
             message {str} -- (default: {None})
@@ -45,4 +54,4 @@ class HttpResponse:
             'status': ResponseStatus.FAILED.value,
             'message': message or 'request_failed',
             'data': data if data is not None else {},
-        }, http_status)
+        }, http_status.value if isinstance(http_status, Enum) else http_status)

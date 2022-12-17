@@ -12,4 +12,3 @@ def env(key: str, default_value: Any = None) -> Any:
         default_value (Any) -- The default value (default None)
     """
     return getenv(key, default_value)
-

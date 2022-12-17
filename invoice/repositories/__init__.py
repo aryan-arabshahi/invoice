@@ -45,23 +45,31 @@ class BaseRepository:
         )
 
         self._client = self.get_client()
-        self.collection = self.get_collection(getattr(self, 'COLLECTION')) if hasattr(self, 'COLLECTION') else None
+        self.collection = self.get_collection()
 
     @staticmethod
     def get_client() -> MongoClient:
+        """Get the DB client
+
+        Returns:
+            MongoClient
+        """
         db_name = env('MONGODB_DATABASE') or config.get('mongodb.db')
         return MongoClientSingleton.get_instance()[db_name]
 
-    def get_collection(self, collection_name: str) -> Any:
+    def get_collection(self, collection_name: str = None) -> Any:
         """Get the collection
 
-        Arguments:
-            collection_name (str) -- The collection name
-        
+        Keyword Arguments:
+            collection_name (str) -- The collection name (default None)
+
         Returns:
             Any
         """
-        return self._client[collection_name]
+        if not collection_name and hasattr(self, 'COLLECTION'):
+            collection_name = getattr(self, 'COLLECTION')
+
+        return self._client[collection_name] if collection_name else None
 
     @staticmethod
     def normalize_primary_key(data: dict) -> dict:

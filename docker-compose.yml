@@ -1,0 +1,35 @@
+version: "3"
+
+services:
+
+  mongodb:
+    container_name: mongodb
+    restart: always
+    image: mongo:6.0.3
+    ports: 
+        - "27017:27017"
+    volumes: 
+        - mongo_data:/data/db
+    environment:
+        - MONGO_INITDB_ROOT_USERNAME=root
+        - MONGO_INITDB_ROOT_PASSWORD=toor
+    networks:
+        - services
+
+  mongoku:
+    container_name: mongoku
+    image: huggingface/mongoku
+    ports:
+        - 3100:3100
+    networks:
+        - services
+
+volumes:
+    mongo_data:
+        driver: local
+
+networks:
+    services:
+        ipam:
+            config:
+                - subnet: 172.29.0.0/24
