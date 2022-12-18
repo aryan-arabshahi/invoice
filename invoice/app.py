@@ -1,7 +1,7 @@
 from flask_restful import Api
-
 from . import config
 from .controllers.contact import ContactController
+from .controllers.invoice import InvoiceController
 from .globals import flask_app
 
 
@@ -15,6 +15,7 @@ class InvoiceApp:
         """Set up the API resources
         """
         self._flask_api.add_resource(ContactController, '/contacts')
+        self._flask_api.add_resource(InvoiceController, '/invoices')
 
     @staticmethod
     def run() -> None:

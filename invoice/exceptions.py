@@ -6,3 +6,11 @@ class ContactAlreadyExists(Exception):
 
 class ContactNotFound(Exception):
     pass
+
+
+class InvoiceAlreadyExists(Exception):
+    pass
+
+
+class InvoiceNotFound(Exception):
+    pass

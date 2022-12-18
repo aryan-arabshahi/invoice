@@ -1,6 +1,6 @@
 from enum import Enum
 
 
-class CurrencyCode(Enum):
+class CurrencyCodeEnum(Enum):
     EUR = 'EUR'
     USD = 'USD'

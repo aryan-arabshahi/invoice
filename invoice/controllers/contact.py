@@ -8,7 +8,7 @@ from invoice.response import HttpResponse, HttpStatusCode
 class ContactController(BaseController):
 
     def post(self) -> Response:
-        """Add new user
+        """Add new contact
 
         Returns:
             Response
@@ -69,5 +69,5 @@ class ContactController(BaseController):
             return response.success(contact.to_json(), http_status=HttpStatusCode.SUCCESS)
 
         except Exception as e:
-            self.log_errors(f'Could not create the new contact - data: {request_data} - {e}')
+            self.log_errors(f'Could not create or update the new contact - data: {request_data} - {e}')
             return response.fail(http_status=HttpStatusCode.INTERNAL_SERVER_ERROR, message='internal_server_error')

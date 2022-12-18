@@ -1,9 +1,11 @@
 from unittest import TextTestRunner, TestSuite, TestLoader
 from tests.test_contact import TestContact
+from tests.test_invoice import TestInvoice
 
 
 test_cases = [
-    TestContact,
+    # TestContact,
+    TestInvoice,
 ]
 
 

@@ -5,7 +5,7 @@ from typing import Optional, Any
 
 from arrow import Arrow
 from bson import ObjectId
-from invoice.enums import CurrencyCode
+from invoice.enums import CurrencyCodeEnum
 
 
 class EnhancedJSONEncoder(JSONEncoder):
@@ -138,14 +138,16 @@ class Contact(DataClass):
 
 @dataclass
 class InvoiceAmount(DataClass):
-    currencyCode: CurrencyCode
+    currencyCode: CurrencyCodeEnum
     value: float
 
 
 @dataclass
 class Invoice(DataClass):
     invoiceDate: str
-    invoiceId: str
+    uniqueId: str
+    amount: InvoiceAmount
+    contactId: str
     createdAt: Optional[str] = None
     updatedAt: Optional[str] = None
     id: Optional[str] = None
