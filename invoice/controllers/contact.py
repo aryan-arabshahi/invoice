@@ -5,7 +5,7 @@ from invoice.globals import contact_service
 from invoice.response import HttpResponse, HttpStatusCode
 
 
-class ContactController(BaseController):
+class ContactListController(BaseController):
 
     def post(self) -> Response:
         """Add new contact
@@ -50,24 +50,49 @@ class ContactController(BaseController):
             request_data = request.get_json(force=True)
             self.logger.debug(f'Getting the specified contact - {request_data}')
 
-            try:
-                contact = contact_service.find_by_unique_id(request_data.get('_id'))
+            contact = contact_service.create_or_update(
+                unique_id=request_data.get('_id'),
+                name=request_data.get('name'),
+                organization=request_data.get('organization'),
+                iban=request_data.get('iban')
+            )
 
-                contact = contact_service.update(
-                    contact.id,
-                    request_data
-                )
-
-            except ContactNotFound as e:
-                contact = contact_service.create(
-                    unique_id=request_data.get('_id'),
-                    name=request_data.get('name'),
-                    organization=request_data.get('organization'),
-                    iban=request_data.get('iban')
-                )
-
-            return response.success(contact.to_json(), http_status=HttpStatusCode.SUCCESS)
+            return response.success(contact.to_json())
 
         except Exception as e:
             self.log_errors(f'Could not create or update the new contact - data: {request_data} - {e}')
+            return response.fail(http_status=HttpStatusCode.INTERNAL_SERVER_ERROR, message='internal_server_error')
+
+
+class ContactByOrganizationAndNameController(BaseController):
+
+    def get(self, organization: str, name: str) -> Response:
+        """Get the specified contact
+
+        Arguments:
+            organization (str) -- The contact organization.
+            name (str) -- The contact name.
+
+        Returns:
+            Response
+        """
+        response = HttpResponse()
+
+        try:
+            self.logger.debug(f'Getting the specified contact - organization: {organization} - name: {name}')
+
+            contact, score = contact_service.find_by_organization_and_name(organization=organization, name=name)
+
+            return response.success({
+                'suggestedContact': contact.name,
+                'contact': contact.to_json(),
+                'confidence': score,
+            })
+
+        except ContactNotFound as e:
+            self.log_errors(f'Could not the specified contact - organization: {organization} - name: {name}')
+            return response.fail(http_status=HttpStatusCode.NOT_FOUND, message='contact_not_found')
+
+        except Exception as e:
+            self.log_errors(f'Could not get the specified contact - organization: {organization} - name: {name}')
             return response.fail(http_status=HttpStatusCode.INTERNAL_SERVER_ERROR, message='internal_server_error')

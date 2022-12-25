@@ -4,8 +4,8 @@ from tests.test_invoice import TestInvoice
 
 
 test_cases = [
-    # TestContact,
-    TestInvoice,
+    TestContact,
+    # TestInvoice,
 ]
 
 

@@ -1,3 +1,4 @@
+from typing import Tuple
 from arrow import utcnow
 from invoice.dataclasses import Contact
 from invoice.exceptions import ContactNotFound
@@ -58,6 +59,22 @@ class ContactRepositoryInterface(ABC):
 
         Returns:
             Contact
+        """
+        pass
+
+    @abstractmethod
+    def find_by_organization_and_name(self, organization: str, name: str) -> Tuple[Contact, float]:
+        """Update the specified contact
+
+        Arguments:
+            organization (str) -- The contact organization.
+            name (str) -- The contact name.
+
+        Returns:
+            Union[Contact, float] -- The contact and the confidence value.
+
+        Raises:
+            ContactNotFound
         """
         pass
 
@@ -149,3 +166,43 @@ class ContactRepository(BaseRepository, ContactRepositoryInterface):
         )
 
         return contact
+
+    def find_by_organization_and_name(self, organization: str, name: str) -> Tuple[Contact, float]:
+        """Update the specified contact
+
+        Arguments:
+            organization (str) -- The contact organization.
+            name (str) -- The contact name.
+
+        Returns:
+            Tuple[Contact, float] -- The contact and the confidence value.
+
+        Raises:
+            ContactNotFound
+        """
+        self.logger.debug(f'Finding contact by organization and name - organization: {organization} - name: {name}')
+
+        result = self.get_collection().find(
+            {
+                'organization': organization,
+                '$text': {
+                    '$search': name,
+                },
+            },
+            {
+                'score': {
+                    '$meta': 'textScore',
+                },
+            }
+        )
+
+        result = list(result)
+
+        if not result:
+            raise ContactNotFound
+
+        best_result = result[0]
+
+        score = best_result.pop('score')
+
+        return Contact(**best_result), score

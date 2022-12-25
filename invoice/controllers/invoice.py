@@ -20,27 +20,16 @@ class InvoiceController(BaseController):
             request_data = request.get_json(force=True)
             self.logger.debug(f'Creating the new invoice - {request_data}')
 
-            contact_unique_id = request_data.get('contact', {}).get('_id')
+            contact_request_data = request_data.get('contact', {})
 
-            self.logger.debug(f'Finding the contact - contact_unique_id: {contact_unique_id}')
+            self.logger.debug(f"Finding the contact - contact_unique_id: {contact_request_data.get('_id')}")
 
-            try:
-                contact = contact_service.find_by_unique_id(contact_unique_id)
-
-                contact = contact_service.update(
-                    contact.id,
-                    request_data
-                )
-
-            except ContactNotFound as e:
-                contact_request_data = request_data.get('contact', {})
-
-                contact = contact_service.create(
-                    unique_id=contact_request_data.get('_id'),
-                    name=contact_request_data.get('name'),
-                    organization=contact_request_data.get('organization'),
-                    iban=contact_request_data.get('iban')
-                )
+            contact = contact_service.create_or_update(
+                unique_id=contact_request_data.get('_id'),
+                name=contact_request_data.get('name'),
+                organization=contact_request_data.get('organization'),
+                iban=contact_request_data.get('iban')
+            )
 
             invoice = invoice_service.create(
                 invoice_date=request_data.get('invoiceDate'),
