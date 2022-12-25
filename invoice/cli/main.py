@@ -1,6 +1,5 @@
 from invoice.app import InvoiceApp
 from invoice.logger import Logger
-from sys import argv
 from invoice.migrations import Migrate
 
 
@@ -15,8 +14,4 @@ def migrate():
 
 
 if __name__ == '__main__':
-    args = argv[1:]
-    if args and args[0] == '--migrate':
-        migrate()
-    else:
-        main()
+    main()

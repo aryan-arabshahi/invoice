@@ -6,6 +6,7 @@ PROJECT_VERSION = '1.0.0'
 PROJECT_ENTRY_POINTS = """
 [console_scripts]
 invoice = invoice.cli.main:main
+invoice-migrate = invoice.cli.main:migrate
 """
 
 
