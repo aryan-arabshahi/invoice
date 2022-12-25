@@ -11,7 +11,7 @@ docker compose up -d
 ```
 **NOTE:** In order to use the MongoDB text search feature, The necessary indexes must be applied. To do that, Run the migration command for the first time:
 ```
-docker exec invoice python invoice-migrate
+docker exec invoice invoice-migrate
 ```
 
 ## How to Run Tests
