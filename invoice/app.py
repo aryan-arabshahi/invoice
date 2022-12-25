@@ -22,4 +22,4 @@ class InvoiceApp:
     def run() -> None:
         """Run the application
         """
-        flask_app.run(debug=config.get('debug', False))
+        flask_app.run(host=config.get('host', '0.0.0.0'), debug=config.get('debug', False))

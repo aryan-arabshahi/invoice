@@ -194,7 +194,7 @@ class ContactRepository(BaseRepository, ContactRepositoryInterface):
                     '$meta': 'textScore',
                 },
             }
-        )
+        ).sort([('score', {'$meta': 'textScore'})]).limit(10)
 
         result = list(result)
 

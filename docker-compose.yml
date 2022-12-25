@@ -2,25 +2,32 @@ version: "3"
 
 services:
 
+    invoice:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: invoice
+        working_dir: /app
+        environment:
+            - CONFIG_PATH=/app/invoice/config.json
+        ports: 
+            - "5000:5000"
+        depends_on:
+            - mongodb
+        networks:
+            - services
+
     mongodb:
         container_name: mongodb
         restart: always
         image: mongo:6.0.3
+        volumes:
+            - mongo_data:/data/db
         ports: 
             - "27017:27017"
-        volumes: 
-            - mongo_data:/data/db
         environment:
             - MONGO_INITDB_ROOT_USERNAME=root
             - MONGO_INITDB_ROOT_PASSWORD=toor
-        networks:
-            - services
-
-    mongoku:
-        container_name: mongoku
-        image: huggingface/mongoku
-        ports:
-            - 3100:3100
         networks:
             - services
 

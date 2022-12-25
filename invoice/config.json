@@ -2,7 +2,7 @@
     "debug": true,
     "mongodb": {
         "db": "invoice",
-        "host": "127.0.0.1",
+        "host": "mongodb",
         "port": 27017,
         "username": "root",
         "password": "toor"
