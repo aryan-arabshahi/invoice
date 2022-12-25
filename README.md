@@ -26,6 +26,6 @@ The project has been implemented based on the Three-Tier architecture with the s
 
 There are **three main layers**:
 * The controller layer which is responsible to handle the incoming requests.
-* The service layer which is responsible to handle the application lo,gic.
-* The repository layer which is the data presentation layer.
+* The service layer which is responsible to handle the application logic.
+* The repository layer which is the data access layer.
 
